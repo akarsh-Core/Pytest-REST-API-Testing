@@ -6,17 +6,16 @@ header = {
     # first before making api calls
 }
 
-body = {
-    "name": "Prasanth 1234",  # needs to be unique everytime
-    "email": "p@ppp.com",  # needs to be unique everytime
-    "gender": "male",
-    "status": "active"
-}
-
 url = 'https://gorest.co.in/public/v2/users'
 
 
 def test_create_and_get_user():
+    body = {
+        "name": "Prasanth 11",  # needs to be unique everytime
+        "email": "p@p1.com",  # needs to be unique everytime
+        "gender": "male",
+        "status": "active"
+    }
     response = requests.post(url=url, headers=header, json=body)
     print(response.json())
     assert response.status_code == 201
@@ -25,3 +24,36 @@ def test_create_and_get_user():
     getResponse = requests.get(url=url + f"/{response.json()['id']}", headers=header)
 
     print(getResponse.json())
+
+
+def test_create_delete_user():
+
+    body = {
+        "name": "Prasanth 111",  # needs to be unique everytime
+        "email": "p@p11.com",  # needs to be unique everytime
+        "gender": "male",
+        "status": "active"
+    }
+
+    response = requests.post(url=url, headers=header, json=body)
+    print(response.json())
+    assert response.status_code == 201
+
+    id = response.json()['id']
+
+    # now get the response for same id -
+    getResponse = requests.get(url=url + f"/{id}", headers=header)
+    print(getResponse.json())
+
+    # now delete the user with this id -
+    deleteResponse = requests.delete(url=url + f"/{id}",headers=header)
+
+    # 204 is status code for deleted
+    assert deleteResponse.status_code == 204
+
+
+    # now try to get deleted user -
+    deletedUser = requests.get(url=url + f"{id}",headers=header)
+
+    # 404 is status code for not found
+    assert deletedUser.status_code == 404
